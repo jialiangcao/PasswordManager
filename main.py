@@ -1,3 +1,6 @@
+import random
+import string
+
 class ManageEntry:
     def __init__(self, website, password, username, notes):
         self.website = website
@@ -5,13 +8,9 @@ class ManageEntry:
         self.username = username
         self.notes = notes
 
-    def generatePassword(self, length):
-        import random
-        import string
-        password = ""
-        for i in range(int(length)):
-            password += random.choice(string.ascii_letters + string.digits + string.punctuation)
-        return password
+    def generatePassword(length):
+        letters = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(letters) for i in range(length))
     def getWebsite(self):
         return self.website
 
@@ -38,6 +37,7 @@ class ManageEntry:
 
 
 class Main:
+    global length
     hasAccount = False
     if not hasAccount:
         print("Please enter a username for your new account: ")
@@ -47,11 +47,19 @@ class Main:
         hasAccount = True
         pwList = []
 
-    print("Please enter the master password: ")
-    attempt = input()
-    if attempt == password:
-        loggedIn = True
-        print("Welcome back, " + username + ".")
+    loggedIn = False
+    tries = 3
+    while not loggedIn:
+        if tries == 0:
+            exit()
+        print("Please enter the master password: ")
+        attempt = input()
+        if attempt == password:
+             print("Welcome back, " + username + ".")
+             loggedIn = True
+        else:
+            tries-=1
+            print("Incorrect password. You have " + str(tries) + " tries remaining.")
 
     while loggedIn:
         print("What would you like to do?\n1. Add a new password\n2. View a password\n3. Delete a password\n4. Change "
@@ -65,9 +73,8 @@ class Main:
             print("Please enter the password for the website: \nType 'gen' to generate a password.")
             password = input()
             if password == "gen":
-                print("Please enter the length of the password: ")
-                length = input()
-                password = ManageEntry.generatePassword(length)
+                password = ManageEntry.generatePassword(8)
+                print("Password generated: " + password)
             print("Please enter any notes or comments: ")
             newEntry = ManageEntry(website, password, username, input())
             pwList.append(newEntry)
